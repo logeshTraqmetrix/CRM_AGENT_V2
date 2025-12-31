@@ -86,8 +86,12 @@ def query_records_tool(query: str):
         print("query",query)
         print("-"*30)
 
-        response = zoho.query_records(query)
-        
+        # print("Formated query",validation["formatted_query"])
+        # print("query",query)
+        response = zoho.query_records(validation["formatted_query"])
+
+        # response = zoho.query_records(query)
+
         return {
             "response":response,
             "COQL_Validation":validation
@@ -290,7 +294,7 @@ def create_task_tool(payload):
 
     <important_notes>
     - `Subject` is **mandatory**.
-    - `Who_Id` should reference a **Lead or Contact** record ID.
+    - `Who_Id` should reference a **Contact** record ID.
     - `What_Id` can reference **any module** record ID.
     - If `What_Id` is provided, `$se_module` is **mandatory** and must be the
       API name of the related module (e.g., "Deals").
@@ -305,7 +309,7 @@ def create_task_tool(payload):
                         "Subject": str,                 # required
                         "Due_Date": str,               # YYYY-MM-DD (optional)
                         "Status": str,                 # optional
-                        "Who_Id": { "id": str },       # Lead/Contact ID (preferred)
+                        "Who_Id": { "id": str },       # Contact ID (preferred)
                         "What_Id": { "id": str },      # Any module record ID (optional)
                         "$se_module": str              # required if What_Id is used
                     }

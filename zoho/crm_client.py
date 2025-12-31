@@ -190,6 +190,7 @@ class ZohoCRMClient:
           "Content-Type": "application/json",
           "Authorization": f"Zoho-oauthtoken {self.access_token}"
       }
+      print("Query inside the class function",query)
 
       payload = {
           "select_query": query
