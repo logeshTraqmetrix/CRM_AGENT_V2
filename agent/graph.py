@@ -20,7 +20,8 @@ from .tools import (
     send_mail_tool,
     get_module_api_name_tool,
     get_specific_record_tool,
-    create_task_tool
+    create_activity_tool,
+    # create_task_tool
 )
 
 from .prompts import get_system_prompt_text
@@ -44,7 +45,8 @@ tools = [
     send_mail_tool,
     get_module_api_name_tool,
     get_specific_record_tool,
-    create_task_tool
+    create_activity_tool,
+    # create_task_tool    
 ]
 
 model_name = "qwen/qwen3-32b"

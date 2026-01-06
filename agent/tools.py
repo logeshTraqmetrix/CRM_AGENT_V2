@@ -42,7 +42,7 @@ def get_fields_tool(module: str, datatypes: list):
 
 
 @tool("query_records_tool")
-def query_records_tool(query: str):
+def query_records_tool(query: str): 
     """
     <use_case>
     Executes a COQL (Zoho CRM Object Query Language) query to fetch records from a Zoho CRM module.
@@ -167,8 +167,6 @@ def convert_lead_tool(record_id: str, payload: dict):
           "overwrite": true, -optional
           "notify_lead_owner": true, -optional
           "move_attachments_to": {"module": "Contacts"}, -optional
-          "Accounts": {"id": "1234567890"}, -optional
-          "Contacts": {}, -optional
           "Deals": {
             "Deal_Name": "Website Redesign",
             "Closing_Date": "2025-12-31",
@@ -285,36 +283,116 @@ def get_specific_record_tool(module: str, record_id: str):
 
 
 
-@tool("create_task_tool")
-def create_task_tool(payload):
+# @tool("create_task_tool")
+# def create_task_tool(payload):
+#     """
+#     <use_case>
+#     Creates a Task record in Zoho CRM.
+#     </use_case>
+
+#     <important_notes>
+#     - `Subject` is **mandatory**.
+#     - `Who_Id` should reference a **Contact** record ID.
+#     - `What_Id` can reference **any module** record ID.
+#     - If `What_Id` is provided, `$se_module` is **mandatory** and must be the
+#       API name of the related module (e.g., "Deals").
+#     - Use `get_module_api_name_tool` if the module API name is unknown.
+#     </important_notes>
+
+#     <arguments>
+#         payload (dict): Task creation payload in the format:
+#             {
+#                 "data": [
+#                     {
+#                         "Subject": str,                 # required
+#                         "Due_Date": str,               # YYYY-MM-DD (optional)
+#                         "Status": str,                 # optional
+#                         "Who_Id": { "id": str },       # only Contact ID (preferred)
+#                         "What_Id": { "id": str },      # Any module record ID (optional)(eg: Leads, Deals, etc)
+#                         "$se_module": str              # required if What_Id is used
+#                     }
+#                 ]
+#             }
+#     </arguments>
+#     """
+#     return zoho.create_Task(payload)
+
+
+
+
+@tool("create_activity_tool")
+def create_activity_tool(module: str, payload: dict):
     """
     <use_case>
-    Creates a Task record in Zoho CRM.
+    Creates an Activity record in Zoho CRM.
+    Supported activities:
+    - Tasks
+    - Meetings (Events)
     </use_case>
 
     <important_notes>
+    General:
+    - `module` must be either `"Tasks"` or `"Events"`.
+
+    For Tasks:
     - `Subject` is **mandatory**.
-    - `Who_Id` should reference a **Contact** record ID.
+    - `Who_Id` should reference a only **Contact** record ID.
     - `What_Id` can reference **any module** record ID.
     - If `What_Id` is provided, `$se_module` is **mandatory** and must be the
-      API name of the related module (e.g., "Deals").
+      API name of the related module (e.g., "Leads", "Deals").
+
+    For Meetings (Events):
+    - `Event_Title` is **mandatory**.
+    - `Start_DateTime` is **mandatory** (ISO 8601 format with timezone).
+    - `End_DateTime` is **mandatory** (ISO 8601 format with timezone).
+    - `All_day` is optional (boolean).
+    - `Who_Id` can be used to associate a only **Contact** (optional).
+    - `What_Id` can reference **any module** record ID.(e.g., "Leads", "Deals").
+    - If `What_Id` is provided, `$se_module` is **mandatory** and must be the
+      API name of the related module.
+    - Meetings are created using the `"Events"` module.
+
     - Use `get_module_api_name_tool` if the module API name is unknown.
     </important_notes>
 
     <arguments>
-        payload (dict): Task creation payload in the format:
-            {
-                "data": [
-                    {
-                        "Subject": str,                 # required
-                        "Due_Date": str,               # YYYY-MM-DD (optional)
-                        "Status": str,                 # optional
-                        "Who_Id": { "id": str },       # Contact ID (preferred)
-                        "What_Id": { "id": str },      # Any module record ID (optional)
-                        "$se_module": str              # required if What_Id is used
-                    }
-                ]
-            }
+        module (str): Target module name.
+            Allowed values:
+            - "Tasks"
+            - "Events"   # Meetings
+
+        payload (dict): Activity creation payload.
+
+        For Tasks:
+        {
+            "data": [
+                {
+                    "Subject": str,                 # required
+                    "Due_Date": str,               # YYYY-MM-DD (optional)
+                    "Status": str,                 # optional
+                    "Who_Id": { "id": str },       # only Contact ID (optional)
+                    "What_Id": { "id": str },      # Any module record ID (optional)
+                    "$se_module": str              # required if What_Id is used
+                }
+            ]
+        }
+
+        For Meetings (Events):
+        {
+            "data": [
+                {
+                    "Event_Title": str,             # required
+                    "Start_DateTime": str,          # ISO 8601 (required)
+                    "End_DateTime": str,            # ISO 8601 (required)
+                    "All_day": bool,                # optional
+                    "Who_Id": { "id": str },        #only Contact ID (optional)
+                    "What_Id": { "id": str },       # Any module record ID (optional)
+                    "$se_module": str               # required if What_Id is used
+                }
+            ]
+        }
     </arguments>
     """
-    return zoho.create_Task(payload)
+
+    return zoho.create_activity(module,payload)
+    

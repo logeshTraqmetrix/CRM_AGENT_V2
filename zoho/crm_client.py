@@ -48,7 +48,7 @@ class ZohoCRMClient:
             print("New Access Token:", access_token)
             return access_token
         else:
-            print("Failed to refresh token:", response.json())
+            print("Failed to generate access token:", response.json())
             return None
 
     def get_records(self, module: str, fields: list = None):
@@ -261,8 +261,8 @@ class ZohoCRMClient:
         }
     
 
-    def create_Task(self, payload: dict):
-        url = f"https://www.zohoapis.com/crm/v8/Tasks"
+    def create_activity(self,module:str, payload: dict):
+        url = f"https://www.zohoapis.com/crm/v8/{module}"
 
         headers = {
             "Content-Type": "application/json",
@@ -280,11 +280,11 @@ class ZohoCRMClient:
         if response.status_code == 401:
             print("⛔ Token expired — refreshing...")
             self.access_token = self.refresh_access_token()
-            return self.create_Task(payload)
+            return self.create_activity(module, payload)
 
         if response.status_code not in (200, 201):
             return tool_error(
-                tool="create_task_tool",
+                tool="create_activity_tool",
                 error_type="API_ERROR",
                 message="Zoho CRM rejected the request",
                 status_code=response.status_code,
